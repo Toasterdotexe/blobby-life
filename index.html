@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f7ee">
+  <title>Blobby Life — a little life simulator</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='3' y='3' width='26' height='26' rx='5' fill='%238bc861'/%3E%3Ccircle cx='12' cy='14' r='2' fill='%232b4931'/%3E%3Ccircle cx='22' cy='14' r='2' fill='%232b4931'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="Blobby Life home"><span class="brand-blobby"><i></i><i></i></span>blobby<span class="brand-light">life</span><span class="brand-dot">.</span></a>
+      <span class="topbar-note">A small world. A little life.</span>
+      <span class="live-label"><span class="status-dot"></span><span id="live-label">WORLD IS ALIVE</span></span>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div><p class="eyebrow">YOUR OWN LITTLE ECOSYSTEM <span class="update-badge">CIRCLE OF LIFE</span></p><h1>Life at its own pace<span>.</span></h1><p class="intro-copy">Little lives, inherited traits, and a meadow full of possibilities.</p></div>
+        <div class="intro-sketch" aria-hidden="true"><span class="sketch-sun">✳</span><span class="sketch-blobby"><i></i><i></i><b></b></span><span class="sketch-grass">╱╲ ╱</span><span class="sketch-caption">small square, big world</span></div>
+      </section>
+
+      <div class="workspace">
+        <div class="meadow-column">
+        <section class="world-card" aria-label="Life simulator">
+          <div class="world-heading"><div class="world-title"><span class="meadow-icon" aria-hidden="true">✳</span><h2>The meadow</h2><span class="world-tag">SANDBOX</span></div><div class="heading-actions"><span id="population">1 Blobby</span><button id="edit-toggle" class="editor-toggle" aria-pressed="false">✎ Edit meadow</button></div></div>
+          <div class="editor-panel" id="editor-panel" hidden>
+            <div class="editor-row"><label>Tool<select id="editor-tool"><option value="inspect">Inspect Blobby</option><option value="bush">Add bush</option><option value="lake">Add lake</option><option value="delete">Delete bush / lake</option></select></label><label id="lake-size-label" hidden>Lake size<input id="lake-size" type="number" min="30" max="160" step="1" value="85"></label><span class="editor-frozen">Simulation paused while editing</span></div>
+            <div class="editor-row world-size-row"><label>Width<input id="world-width" type="number" min="400" max="2400" step="1" value="1200"></label><span class="size-times">×</span><label>Height<input id="world-height" type="number" min="300" max="1600" step="1" value="760"></label><button id="resize-world" class="secondary-button">Resize meadow</button><span class="size-limits">Width 400–2400 · Height 300–1600</span></div>
+            <p id="editor-help" class="editor-help">Choose a tool, then click or tap the meadow.</p>
+          </div>
+          <div class="canvas-wrap" id="canvas-wrap">
+            <canvas id="world" tabindex="0" aria-label="The meadow. B adds a Blobby, P adds a Blubby, R adds a Robby. Click a creature to inspect its needs and DNA. In editor mode, click to use the chosen tool."></canvas>
+            <div class="world-tip" id="world-tip"><span class="pointer-icon" aria-hidden="true">↖</span><span id="world-tip-text">Click a Blobby to say hello</span></div>
+            <div class="world-legend"><span><i class="legend-blobby"></i>Blobby</span><span><i class="legend-blubby"></i>Blubby</span><span><i class="legend-robby"></i>Robby</span><span><i class="legend-bush"></i>Berries</span><span><i class="legend-water"></i>Water</span></div>
+            <div class="pause-overlay" id="pause-overlay" hidden><span>Ⅱ</span> Taking a little pause</div>
+            <div id="toast" class="toast" role="status" aria-live="polite"></div>
+          </div>
+          <div class="world-controls">
+            <button class="spawn-button" id="spawn"><kbd id="spawn-key">B</kbd><span id="spawn-label">Spawn Blobby</span><span aria-hidden="true">＋</span></button>
+            <div class="playback-controls"><button class="icon-button" id="pause" title="Pause (Space)" aria-label="Pause simulation"><span id="pause-icon">Ⅱ</span></button><div class="speed-controls" aria-label="Simulation speed"><button class="speed-button active" data-speed="1" aria-pressed="true">1×</button><button class="speed-button" data-speed="2" aria-pressed="false">2×</button><button class="speed-button" data-speed="4" aria-pressed="false">4×</button></div><span class="control-divider"></span><button class="icon-button reset-button" id="reset" title="Start a new meadow" aria-label="Reset the meadow">↺</button></div>
+          </div>
+          <div class="species-census"><span><i class="species-mark grazer"></i><strong id="count-blobby">1</strong> Blobbies</span><span><i class="species-mark predator"></i><strong id="count-blubby">0</strong> Blubbys</span><span><i class="species-mark defender"></i><strong id="count-robby">0</strong> Robbys</span><span class="census-note">Every little life is different.</span></div>
+          <div class="world-footer"><span><span class="mini-dot"></span><span id="population-capacity">1 / 10,000 living</span></span><span><kbd>B</kbd> Blobby <kbd>P</kbd> Blubby <kbd>R</kbd> Robby</span></div>
+        </section>
+
+        <section class="history-card" aria-label="Meadow history"><div class="history-heading"><div><p class="card-label">A WORLD IN MOTION</p><h2>The meadow over time</h2></div><span id="graph-time" class="graph-time">0 min</span></div><div class="history-grid"><div class="stat-graph"><div class="graph-label"><span>Population</span><strong id="graph-population-value">1</strong></div><canvas id="population-graph" width="500" height="180" aria-label="Population history"></canvas><span class="graph-unit">living creatures</span></div><div class="stat-graph"><div class="graph-label"><span>Average walk speed</span><strong id="graph-speed-value">0</strong></div><canvas id="speed-graph" width="500" height="180" aria-label="Average walk speed history"></canvas><span class="graph-unit">units per second</span></div><div class="stat-graph"><div class="graph-label"><span>Average eyesight</span><strong id="graph-eyesight-value">0</strong></div><canvas id="eyesight-graph" width="500" height="180" aria-label="Average eyesight history"></canvas><span class="graph-unit">units of sight</span></div></div><p class="history-note">A snapshot every simulation minute. A little record of the last 60 minutes.</p></section>
+        </div>
+
+        <aside class="sidebar">
+          <section class="spawn-card"><p class="card-label">ADD SOME LITTLE LIVES</p><label class="species-select-label" for="spawn-species">Who’s joining the meadow?</label><select id="spawn-species" class="species-select"><option value="blobby">Blobby · berry grazer</option><option value="blubby">Blubby · predator</option><option value="robby">Robby · group defender</option></select><div class="spawn-options"><label>Spawn amount<input id="spawn-count" type="number" min="1" max="500" step="1" value="1"></label><label>Colors<select id="color-mode"><option value="random">From DNA</option><option value="custom">Choose a color</option></select></label></div><label class="color-field" id="spawn-color-label" hidden>Visible color<input id="spawn-color" type="color" value="#8bbf59"></label><p class="factory-note">Each new creature has its own DNA. A chosen color changes its look; its genes stay the same.</p><p class="spawn-note" id="spawn-note">500 per spawn · 10,000 living creatures maximum.</p></section>
+          <section class="inspector-card">
+            <div class="card-label"><span>MEET THE LOCALS</span><span class="label-symbol" aria-hidden="true">⌕</span></div>
+            <div id="empty-inspector"><div class="empty-portrait" aria-hidden="true"><span class="portrait-blobby"><i></i><i></i><b></b></span><span class="portrait-spark">✧</span></div><h2 id="empty-title">A curious little square.</h2><p id="empty-description">Everyone has their own little needs. Tap a Blobby to see how they’re doing.</p><div class="tap-hint"><span aria-hidden="true">↖</span><span id="tap-hint-text">Select a friend in the meadow</span></div></div>
+            <div id="selected-inspector" hidden>
+              <div class="selected-heading"><span class="small-portrait" id="selected-portrait" aria-hidden="true"><i></i><i></i></span><div><h2 id="blobby-name">Blobby 01</h2><span class="selected-subtitle" id="species-description">Berry grazer</span></div><button id="deselect" class="close-button" title="Close creature details" aria-label="Close creature details">×</button></div>
+              <div class="behavior-pill"><span class="mini-dot"></span><span id="behavior">Exploring the meadow</span></div>
+              <div class="need"><div class="need-label"><span>Hunger</span><span id="hunger-value">0%</span></div><div class="need-track" role="progressbar" id="hunger-meter" aria-label="Hunger" aria-valuemin="0" aria-valuemax="100"><span id="hunger-fill"></span></div></div>
+              <div class="need thirst"><div class="need-label"><span>Thirst</span><span id="thirst-value">0%</span></div><div class="need-track" role="progressbar" id="thirst-meter" aria-label="Thirst" aria-valuemin="0" aria-valuemax="100"><span id="thirst-fill"></span></div></div>
+              <p class="needs-note">A fuller bar means a bigger need. At 100%, a creature dies.</p>
+              <div class="traits-grid"><div><span>Walk speed</span><strong id="walk-speed-value">0</strong><small>units / sec</small></div><div><span>Eyesight</span><strong id="eyesight-value">0</strong><small>units</small></div><div><span>Hunger noticed</span><strong id="hunger-recognition-value">50%</strong><small>threshold</small></div></div>
+              <details class="dna-section" id="dna-details" open><summary><span class="dna-summary-icon" aria-hidden="true">⌘</span> DNA &amp; inherited traits <span class="details-chevron" aria-hidden="true">⌄</span></summary><p class="dna-intro">Three little recipes. One unique creature.</p><div class="gene-card color-gene"><div class="gene-heading"><span><i></i>Colortien <small>color</small></span><strong id="colortien-protein">EEEE</strong></div><code id="colortien-dna">AAAAAAAAAAAA</code></div><div class="gene-card speed-gene"><div class="gene-heading"><span><i></i>Speedtien <small>speed</small></span><strong id="speedtien-protein">EEEE</strong></div><code id="speedtien-dna">AAAAAAAAAAAA</code></div><div class="gene-card eye-gene"><div class="gene-heading"><span><i></i>Eyetien <small>awareness</small></span><strong id="eyetien-protein">EEEE</strong></div><code id="eyetien-dna">AAAAAAAAAAAA</code></div><p class="dna-note">12 DNA bases → 4 protein letters. Babies inherit bases from both parents. Better eyesight also means noticing hunger later.</p></details>
+              <label class="color-field resident-color">Visible color<input id="selected-color" type="color" value="#8bbf59"></label>
+              <label class="sight-toggle"><span><span class="eye-icon" aria-hidden="true">◉</span> Show eyesight</span><input id="show-sight" type="checkbox" checked><span class="switch" aria-hidden="true"></span></label>
+              <p class="sight-note">The circle shows what this creature can see.</p>
+            </div>
+          </section>
+
+          <section class="routine-card"><p class="card-label">THE CIRCLE OF LIFE</p><h2>Three kinds of little lives</h2><div class="routine-step"><span class="step-icon species-guide grazer" aria-hidden="true">▪</span><div><h3>Blobby <kbd>B</kbd></h3><p>Berries, water, and a chance to pass on their DNA.</p></div></div><div class="routine-step"><span class="step-icon species-guide predator" aria-hidden="true">▣</span><div><h3>Blubby <kbd>P</kbd></h3><p>A predator with a longer view. Hunts Blobbies for food.</p></div></div><div class="routine-step"><span class="step-icon species-guide defender" aria-hidden="true">●</span><div><h3>Robby <kbd>R</kbd></h3><p>A small grazer. Three nearby can team up against a Blubby.</p></div></div><div class="routine-footnote">Feed. Explore. Grow. The meadow carries on.</div></section>
+          <div class="keyboard-hint"><kbd>Space</kbd> pause <span>·</span> <kbd>Esc</kbd> close / finish editing</div>
+        </aside>
+      </div>
+    </main>
+    <footer class="page-footer"><span>Made for the joy of watching little things live.</span><span class="footer-mark">STAY CURIOUS <span aria-hidden="true">✳</span></span></footer>
+  </div>
+  <script defer src="simulation.js"></script>
+  <script defer src="app.js"></script>
+</body>
+</html>
